@@ -178,6 +178,7 @@ class C_Pedido extends CI_Controller {
 				}
 			}
 		}
+		
 		foreach ($total as $item)
 		{
 			foreach ($result as $arr)
@@ -206,9 +207,15 @@ class C_Pedido extends CI_Controller {
 						'existente' => $verificacion[0]["almm_cantidad"],
 						'total' => $item["can_mp_t"]	
 					);
+
+					
+					$total[$item["mat_pri"]]["can_mp_t"] = $verificacion[0]["almm_cantidad"];
 				}
 		}
 		$salida = array('smp_fecha_salida'=>date('Y-n-j'), 'ped_codigo'=>$ped_codigo);
+
+		print_r($total);
+		print_r($faltante);
 
 		if(empty($faltante))
 		{
@@ -230,32 +237,51 @@ class C_Pedido extends CI_Controller {
 		$this->load->view('v_acabeza');
 		$this->load->view('v_admin_8pedido',$data);
 		$this->load->view('v_zpie');
-	}
+	}	
 
 	public function reenviar()
 	{
 		$ped_codigo = $_POST['ped_codigo'];
+
 		$alerta = $this->m_pedido->get_alerta($ped_codigo);
-		$bandera=0;		
-		foreach($alerta->result_array() as $item)
+
+		$bandera = $alerta->num_rows();
+
+		foreach ($alerta->result_array() as $mp)
 		{
-			$inventario = $this->m_pedido->devolver_cant($item["map_codigo"]);
-			if($inventario < $item["ale_falta"])
+			$cantMp = $this->m_pedido->devolver_cant($mp['map_codigo']);
+			if($cantMp >= $mp['ale_falta'])
 			{
-				$bandera=$bandera+1;
+				$bandera = $bandera - 1;
 			}
-		$data = array(
-					'dsmp_cantidad' => $item["can_mp_t"],
-					'smp-codigo' => $smp_codigo,
-					'map_codigo' => $item["mat_pri"]
-			);
 		}
+
 		if($bandera == 0)
 		{
+			echo "Realizar salida";
 			
-			$salida = array('smp_fecha_salida'=>date('Y-n-j'), 'ped_codigo'=>$ped_codigo);
-			$verificacion = $this->m_pedido->registro_salida_materia_prima($salida,$alerta);
 		}
+		else
+		{
+			echo "incompleto";
+			
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		
 	}

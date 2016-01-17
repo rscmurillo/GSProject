@@ -215,7 +215,7 @@ class M_pedido extends CI_Model {
 		return $query->num_rows();
     }
 
-public function get_alertas()
+	public function get_alertas()
     {
 		   $this->db->select('*');
 		   $this->db->from('pedido');
@@ -225,14 +225,13 @@ public function get_alertas()
 		return $query;
     }
 
-public function get_alertas_pedido($cod)
+	public function get_alertas_pedido($cod)
     {
 		$this->db->select('*');
 		$this->db->from('alerta');
 		$this->db->join('materia_prima','materia_prima.map_codigo = alerta.map_codigo');
 		$this->db->where('ped_codigo',$cod);
 		$query=$this->db->get();
-return $query;
+	return $query;
     }
-    
 }
